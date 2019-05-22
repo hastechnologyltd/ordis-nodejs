@@ -1,9 +1,10 @@
 var net = require('net');
 
 var client = new net.Socket();
-client.connect(28028, "localhost", function(){
-   console.log("connceted");
-   client.write("Hello Jeff");
+client.connect(48202, "localhost", function(){
+   console.log("connected");
+   client.write("STRING\n");
+    client.write("Additional data.\n");
 });
 
 client.on('data', function(data) {
