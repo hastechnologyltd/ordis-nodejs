@@ -4,19 +4,49 @@ var client = new net.Socket();
 client.connect(48202, "localhost", function(){
    console.log("connected");
 
-   var command = parseInt("F2" , 16);
-   var username = getBytes("jeff");
-   var passowrd = getBytes("password1");
+    var command = parseInt("F2" , 16);
+    var username = getBytes("jeff");
+    var passowrd = getBytes("password1");
 
     var bytes = ([command]).concat(username).concat(0).concat(passowrd).concat(0);
     var buff = new Buffer.from(bytes);
-    //var data = buff.toString('utf8');
-    //var bufStream = new BufferStream(buf);
-
     client.write(buff);
 
-    client.write("data");
-   //client.write("Additional data.\n");
+
+    var correlationId = getBytes("123456789")
+    var headerBytes = (correlationId).concat(0);
+    var headerBuff = new Buffer.from(headerBytes);
+    client.write(headerBuff);
+
+    var who = getBytes("Jeff")
+    var whoBytes = (who).concat(0);
+    var whoBuff = new Buffer.from(whoBytes);
+    client.write(whoBuff);
+
+    var dataHeader = new Int8Array(5);
+    dataHeader[0] = 1;
+    dataHeader[1] = 2;
+    dataHeader[2] = 3;
+    dataHeader[3] = 4;
+    dataHeader[4] = 5;
+    var dataHeaderBuff = new Buffer.from(dataHeader);
+    client.write(dataHeaderBuff);
+
+    var what = getBytes("elemt.column")
+    var whatBytes = (who).concat(0);
+    var whatBuff = new Buffer.from(whatBytes);
+    client.write(whatBuff);
+
+
+    var extraDataBytes = getBytes("Load of extra data")
+
+    var extraDataLength = new Int8Array(1);
+    extraDataLength[0] = extraDataBytes.length;
+    var extraDataLengthBuff = new Buffer.from(extraDataLength);
+    client.write(extraDataLengthBuff);
+
+    var extraDataBuff = new Buffer.from(extraDataBytes);
+    client.write(extraDataBuff);
 });
 
 client.on('data', function(data) {
